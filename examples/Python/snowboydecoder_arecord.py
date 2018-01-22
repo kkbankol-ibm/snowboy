@@ -92,7 +92,7 @@ class HotwordDetector(object):
     def record_proc(self):
         CHUNK = 2048
         RECORD_RATE = 16000
-        cmd = 'arecord -q -r %d -f S16_LE' % RECORD_RATE
+        cmd = 'arecord -D mic_channel8 -q -r %d -f S16_LE' % RECORD_RATE
         process = subprocess.Popen(cmd.split(' '),
                                    stdout = subprocess.PIPE,
                                    stderr = subprocess.PIPE)
@@ -168,6 +168,7 @@ class HotwordDetector(object):
                 callback = detected_callback[ans-1]
                 if callback is not None:
                     callback()
+		os.system('/home/pi/record.sh')
 
         logger.debug("finished.")
 
