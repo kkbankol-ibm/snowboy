@@ -110,6 +110,18 @@ class HotwordDetector(object):
         self.record_thread = threading.Thread(target = self.record_proc)
         self.record_thread.start()
 
+    def wsk_transcribe_audio(audio):
+        sys.exit(0)
+        encoded_audio = open(audio, 'r').read().encode("base64")
+        # get the wsk values by running "wsk property get"
+        whisk_namespace = "<redacted>"
+        whisk_action = "<redacted>"
+        whisk_api = "https://openwhisk.ng.bluemix.net/api/v1/namespaces/" + whisk_namespace + "/actions/" + whisk_action + "?blocking=true&result=true"
+        whisk_auth = ("<redacted>", "<redacted>")
+        stt_username = "<redacted>"
+        stt_password = "<redacted>"
+        #r = requests.post(whisk_api, json={"content_type":"audio/flac","encoding":"base64","payload": encoded_audio ,"username":stt_username,"password":stt_password}, auth=whisk_auth)
+
     def start(self, detected_callback=play_audio_file,
               interrupt_check=lambda: False,
               sleep_time=0.03):
@@ -168,8 +180,16 @@ class HotwordDetector(object):
                 callback = detected_callback[ans-1]
                 if callback is not None:
                     callback()
-		os.system('/home/pi/record.sh')
-
+		matrix_demos_dir = "/home/pi/matrix-creator-hal/build/demos/"
+		beamforming_result_path = "/tmp/beamforming_result.flac"
+		cwd = os.getcwd()
+		print("Running from " + cwd)
+		os.system(matrix_demos_dir + "micarray_recorder")
+		print("Voice recording complete")
+		os.system("sox -r 16000 -c 1 -e signed -b 16 " + cwd + "/mic_16000_s16le_channel_8.raw /tmp/channel_8.wav")
+		os.system("flac -f -s /tmp/channel_8.wav -o /tmp/beamforming_result.flac")
+		print("Conversion from raw to flac complete")
+		#wsk_transcribe_audio("/tmp/beamforming_result.flac")
         logger.debug("finished.")
 
     def terminate(self):
