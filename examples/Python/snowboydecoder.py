@@ -7,6 +7,8 @@ import time
 import wave
 import os
 import logging
+import sys
+import requests
 
 logging.basicConfig()
 logger = logging.getLogger("snowboy")
@@ -54,6 +56,22 @@ def play_audio_file(fname=DETECT_DING):
     stream_out.stop_stream()
     stream_out.close()
     audio.terminate()
+
+
+def wsk_transcribe_audio():
+    rec_seconds = 3
+    audio_path = "/tmp/input.flac"
+    os.system("rec /tmp/input.wav trim 0 " + str(rec_seconds))
+    os.system("flac -f -s /tmp/input.wav -o " + audio_path )
+    encoded_audio = open(audio_path, 'r').read().encode("base64")
+    # get the following wsk values by running "wsk property get"
+    whisk_namespace = "kkbankol%40us.ibm.com_dev"
+    whisk_action = "homeSequence"
+    whisk_api = "https://openwhisk.ng.bluemix.net/api/v1/namespaces/" + whisk_namespace + "/actions/" + whisk_action + "?blocking=true&result=true"
+    whisk_auth = ("<redacted>", "<redacted>")
+    r = requests.post(whisk_api, json={"content_type":"audio/flac","encoding":"base64","payload": encoded_audio}, auth=whisk_auth)
+    print("Listening... Press Ctrl+C to exit")
+    return
 
 
 class HotwordDetector(object):
@@ -113,7 +131,6 @@ class HotwordDetector(object):
             rate=self.detector.SampleRate(),
             frames_per_buffer=2048,
             stream_callback=audio_callback)
-
 
     def start(self, detected_callback=play_audio_file,
               interrupt_check=lambda: False,
@@ -188,6 +205,8 @@ class HotwordDetector(object):
                     message += time.strftime("%Y-%m-%d %H:%M:%S",
                                          time.localtime(time.time()))
                     logger.info(message)
+                    wsk_transcribe_audio()
+                    logger.debug("finished.")
                     callback = detected_callback[0]
                     if callback is not None:
                         callback()
@@ -216,7 +235,6 @@ class HotwordDetector(object):
 
                 recordingCount = recordingCount + 1
                 self.recordedData.append(data)
-
         logger.debug("finished.")
 
     def saveMessage(self):
