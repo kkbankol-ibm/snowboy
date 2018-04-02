@@ -68,7 +68,10 @@ def wsk_transcribe_audio():
     whisk_namespace = "kkbankol%40us.ibm.com_dev"
     whisk_action = "homeSequence"
     whisk_api = "https://openwhisk.ng.bluemix.net/api/v1/namespaces/" + whisk_namespace + "/actions/" + whisk_action + "?blocking=true&result=true"
-    whisk_auth = ("<redacted>", "<redacted>")
+    # running "wsk property get" should deliver a string like 'd16f007f-d412-4511-87d9-ca34d40c6cce:OWosfg0EHHgTw4FPRxFaPDWS1IqNgihX8OazAZ9XO75VtbNQH1k5yfx7CXDdjr5a'
+    # replace the "auth" value below with the string printed by the wsk cli
+    auth = 'd16f007f-d412-4511-87d9-ca34d40c6cce:OWosfg0EHHgTw4FPRxFaPDWS1IqNgihX8OazAZ9XO75VtbNQH1k5yfx7CXDdjr5a'
+    whisk_auth = tuple(auth.split(":"))
     r = requests.post(whisk_api, json={"content_type":"audio/flac","encoding":"base64","payload": encoded_audio}, auth=whisk_auth)
     print("Listening... Press Ctrl+C to exit")
     return
