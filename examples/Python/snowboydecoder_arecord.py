@@ -5,6 +5,7 @@ import snowboydetect
 import time
 import wave
 import os
+import sys
 import logging
 import subprocess
 import threading
@@ -180,16 +181,16 @@ class HotwordDetector(object):
                 callback = detected_callback[ans-1]
                 if callback is not None:
                     callback()
-		matrix_demos_dir = "/home/pi/matrix-creator-hal/build/demos/"
-		beamforming_result_path = "/tmp/beamforming_result.flac"
-		cwd = os.getcwd()
-		print("Running from " + cwd)
-		os.system(matrix_demos_dir + "micarray_recorder")
-		print("Voice recording complete")
-		os.system("sox -r 16000 -c 1 -e signed -b 16 " + cwd + "/mic_16000_s16le_channel_8.raw /tmp/channel_8.wav")
-		os.system("flac -f -s /tmp/channel_8.wav -o /tmp/beamforming_result.flac")
-		print("Conversion from raw to flac complete")
-		#wsk_transcribe_audio("/tmp/beamforming_result.flac")
+                matrix_demos_dir = "/home/pi/matrix-creator-hal/build/demos/"
+                beamforming_result_path = "/tmp/beamforming_result.flac"
+                cwd = os.getcwd()
+                print("Running from " + cwd)
+                os.system(matrix_demos_dir + "micarray_recorder")
+                print("Voice recording complete")
+                os.system("sox -r 16000 -c 1 -e signed -b 16 " + cwd + "/mic_16000_s16le_channel_8.raw /tmp/channel_8.wav")
+                os.system("flac -f -s /tmp/channel_8.wav -o /tmp/beamforming_result.flac")
+                print("Conversion from raw to flac complete")
+                #wsk_transcribe_audio("/tmp/beamforming_result.flac")
         logger.debug("finished.")
 
     def terminate(self):
@@ -199,4 +200,3 @@ class HotwordDetector(object):
         """
         self.recording = False
         self.record_thread.join()
-

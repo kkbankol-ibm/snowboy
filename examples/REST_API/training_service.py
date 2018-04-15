@@ -25,7 +25,7 @@ if __name__ == "__main__":
     try:
         [_, wav1, wav2, wav3, out] = sys.argv
     except ValueError:
-        print "Usage: %s wave_file1 wave_file2 wave_file3 out_model_name" % sys.argv[0]
+        print("Usage: %s wave_file1 wave_file2 wave_file3 out_model_name" % sys.argv[0])
         sys.exit()
 
     data = {
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     if response.ok:
         with open(out, "w") as outfile:
             outfile.write(response.content)
-        print "Saved model to '%s'." % out
+        print("Saved model to '%s'." % out)
     else:
-        print "Request failed."
-        print response.text
+        print("Request failed.")
+        print(response.text)

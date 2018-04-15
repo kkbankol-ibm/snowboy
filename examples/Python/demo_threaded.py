@@ -3,6 +3,11 @@ import sys
 import signal
 import time
 
+try:
+    raw_input          # Python 2
+except NameError:
+    raw_input = input  # Python 3
+
 stop_program = False
 
 # This a demo that shows running Snowboy in another thread
@@ -40,8 +45,8 @@ while not stop_program:
     try:
         num1 = int(raw_input("Enter the first number to add: "))
         num2 = int(raw_input("Enter the second number to add: "))
-        print "Sum of number: {}".format(num1 + num2)
+        print("Sum of number: {}".format(num1 + num2))
     except ValueError:
-        print "You did not enter a number."
+        print("You did not enter a number.")
 
 threaded_detector.terminate()
